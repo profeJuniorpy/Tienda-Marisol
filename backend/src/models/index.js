@@ -12,7 +12,15 @@ const DEFINE_OPTS = {
   updatedAt:       'updated_at'
 };
 
-// Railway puede exponer la conexión como URL o como variables individuales MYSQL*
+// Diagnóstico de variables de entorno disponibles
+console.log('[DB-DIAG] NODE_ENV   :', process.env.NODE_ENV);
+console.log('[DB-DIAG] DATABASE_URL:', process.env.DATABASE_URL ? 'SET' : 'NOT SET');
+console.log('[DB-DIAG] MYSQL_URL  :', process.env.MYSQL_URL   ? 'SET' : 'NOT SET');
+console.log('[DB-DIAG] DB_HOST    :', process.env.DB_HOST     || 'NOT SET');
+console.log('[DB-DIAG] MYSQLHOST  :', process.env.MYSQLHOST   || 'NOT SET');
+console.log('[DB-DIAG] DB_PORT    :', process.env.DB_PORT     || 'NOT SET');
+console.log('[DB-DIAG] DB_NAME    :', process.env.DB_NAME     || 'NOT SET');
+
 const dbUrl = process.env.DATABASE_URL || process.env.MYSQL_URL;
 
 const sequelize = dbUrl
