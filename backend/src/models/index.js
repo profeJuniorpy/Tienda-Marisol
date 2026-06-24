@@ -12,14 +12,26 @@ const DEFINE_OPTS = {
   updatedAt:       'updated_at'
 };
 
-const sequelize = process.env.DATABASE_URL
-  ? new Sequelize(process.env.DATABASE_URL, {
+// Railway puede exponer la conexión como URL o como variables individuales MYSQL*
+const dbUrl = process.env.DATABASE_URL || process.env.MYSQL_URL;
+
+const sequelize = dbUrl
+  ? new Sequelize(dbUrl, {
       dialect: 'mysql',
       logging:  false,
       define:   DEFINE_OPTS,
       pool:     { max: 5, min: 0, acquire: 30000, idle: 10000 }
     })
-  : new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, dbConfig);
+  : new Sequelize(
+      process.env.DB_NAME     || process.env.MYSQLDATABASE || dbConfig.database,
+      process.env.DB_USER     || process.env.MYSQLUSER     || dbConfig.username,
+      process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || dbConfig.password,
+      {
+        ...dbConfig,
+        host: process.env.DB_HOST || process.env.MYSQLHOST || dbConfig.host,
+        port: parseInt(process.env.DB_PORT || process.env.MYSQLPORT) || dbConfig.port || 3306
+      }
+    );
 
 // ─── Importar modelos ────────────────────────────────────────────────────────
 const Usuario         = require('./Usuario')(sequelize);
