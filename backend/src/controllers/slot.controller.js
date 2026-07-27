@@ -23,14 +23,14 @@ async function slotsDisponibles(req, res, next) {
         fecha:  { [Op.gte]: hoy }
       },
       order: [['fecha', 'ASC'], ['hora_inicio', 'ASC']],
-      attributes: ['id', 'fecha', 'hora_inicio', 'hora_fin', 'capacidad_maxima', 'reservas_actuales']
+      attributes: ['id', 'fecha', 'hora_inicio', 'hora_fin', 'capacidad_max', 'pedidos_activos']
     });
 
     // Agregar disponibilidad calculada
     const slotsConDisp = slots.map(s => ({
       ...s.toJSON(),
-      disponibles: s.capacidad_maxima - s.reservas_actuales,
-      lleno:       s.reservas_actuales >= s.capacidad_maxima
+      disponibles: s.capacidad_max - s.pedidos_activos,
+      lleno:       s.pedidos_activos >= s.capacidad_max
     }));
 
     res.json({ slots: slotsConDisp });
@@ -60,12 +60,12 @@ async function crear(req, res, next) {
 
   try {
     const slot = await PickupSlot.create({
-      fecha:            value.fecha,
-      hora_inicio:      value.hora_inicio,
-      hora_fin:         value.hora_fin,
-      capacidad_maxima: value.capacidad_maxima,
-      reservas_actuales: 0,
-      activo:           true
+      fecha:           value.fecha,
+      hora_inicio:     value.hora_inicio,
+      hora_fin:        value.hora_fin,
+      capacidad_max:   value.capacidad_maxima,
+      pedidos_activos: 0,
+      activo:          true
     });
     res.status(201).json({ slot });
   } catch (err) {
@@ -100,10 +100,10 @@ async function generarSemana(req, res, next) {
         const [ya] = await PickupSlot.findOrCreate({
           where: { fecha: fechaStr, hora_inicio: h.hora_inicio },
           defaults: {
-            hora_fin:          h.hora_fin,
-            capacidad_maxima:  req.body.capacidad_maxima || 10,
-            reservas_actuales: 0,
-            activo:            true
+            hora_fin:        h.hora_fin,
+            capacidad_max:   req.body.capacidad_maxima || 10,
+            pedidos_activos: 0,
+            activo:          true
           }
         });
         creados.push(ya);

@@ -43,7 +43,7 @@ async function crear(req, res, next) {
       if (!slot || !slot.activo) {
         throw Object.assign(new Error('Slot no disponible'), { status: 400 });
       }
-      if (slot.reservas_actuales >= slot.capacidad_maxima) {
+      if (slot.pedidos_activos >= slot.capacidad_max) {
         throw Object.assign(new Error('El horario seleccionado ya está lleno'), { status: 409 });
       }
 
@@ -92,7 +92,7 @@ async function crear(req, res, next) {
 
       // 7. Reservar slot
       await slot.update(
-        { reservas_actuales: slot.reservas_actuales + 1 },
+        { pedidos_activos: slot.pedidos_activos + 1 },
         { transaction: t }
       );
 
@@ -223,7 +223,7 @@ async function cambiarEstado(req, res, next) {
 
     // Si se cancela, liberar el slot
     if (estado === 'cancelado' && pedido.slot_id) {
-      await PickupSlot.decrement('reservas_actuales', { where: { id: pedido.slot_id } });
+      await PickupSlot.decrement('pedidos_activos', { where: { id: pedido.slot_id } });
     }
 
     res.json({ pedido });

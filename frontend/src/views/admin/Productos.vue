@@ -208,7 +208,7 @@
                         type="button"
                         @click="sugerirImagen"
                         class="btn-primary text-xs py-1 px-3 inline-flex items-center gap-1"
-                        title="Busca una imagen automáticamente según el nombre del producto"
+                        title="Asigna automáticamente una imagen según el nombre del producto"
                       >
                         ✨ Sugerir imagen
                       </button>
