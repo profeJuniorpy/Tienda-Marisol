@@ -80,9 +80,12 @@ async function actualizar(req, res) {
     if (req.file) {
       await eliminarImagen(imagen_url);
       imagen_url = await subirImagen(req.file.buffer, req.file.originalname);
+    } else if (req.body.imagen_url !== undefined) {
+      imagen_url = req.body.imagen_url;
     }
 
-    await producto.update({ ...req.body, imagen_url });
+    const { imagen_url: _omit, ...resto } = req.body;
+    await producto.update({ ...resto, imagen_url });
     res.json(producto);
   } catch (err) {
     res.status(400).json({ error: err.message });
