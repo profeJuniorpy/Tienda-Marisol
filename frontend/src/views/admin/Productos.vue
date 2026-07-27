@@ -203,10 +203,20 @@
                       placeholder="https://... (pegar URL de imagen)"
                       @input="previstaImagen = null; archivoImagen = null"
                     />
-                    <label class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1">
-                      <PhotoIcon class="h-3.5 w-3.5" /> O subir archivo
-                      <input type="file" accept="image/*" class="hidden" @change="previsualizar" />
-                    </label>
+                    <div class="flex gap-2 flex-wrap">
+                      <button
+                        type="button"
+                        @click="sugerirImagen"
+                        class="btn-primary text-xs py-1 px-3 inline-flex items-center gap-1"
+                        title="Busca una imagen automáticamente según el nombre del producto"
+                      >
+                        ✨ Sugerir imagen
+                      </button>
+                      <label class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1 py-1 px-3">
+                        <PhotoIcon class="h-3.5 w-3.5" /> Subir archivo
+                        <input type="file" accept="image/*" class="hidden" @change="previsualizar" />
+                      </label>
+                    </div>
                     <p v-if="archivoImagen" class="text-xs text-gray-400">Archivo: {{ archivoImagen.name }}</p>
                   </div>
                 </div>
@@ -334,6 +344,65 @@ function previsualizar(e) {
   if (!archivo) return;
   archivoImagen.value  = archivo;
   previstaImagen.value = URL.createObjectURL(archivo);
+}
+
+// Mapa de palabras clave → foto Unsplash (sin API key)
+const IMAGEN_MAP = [
+  [['leche'],                    'photo-1563636619-e9143da7973b'],
+  [['yogur'],                    'photo-1488477181946-6428a0291777'],
+  [['queso'],                    'photo-1486297678162-eb2a19b0a32d'],
+  [['manteca'],                  'photo-1589985270826-4b7bb135bc9d'],
+  [['coca','pepsi','sprite','gaseosa','refresco'], 'photo-1581006852262-e4307cf6283a'],
+  [['agua'],                     'photo-1548839140-29a749e1cf4d'],
+  [['jugo','zumo'],              'photo-1600271886742-f049cd451bba'],
+  [['té','te negro','yerba'],    'photo-1544787219-7f47ccb76574'],
+  [['arroz'],                    'photo-1586201375761-83865001e31c'],
+  [['fideos','pasta','spaghetti','tallarín'], 'photo-1563379926898-05f4575a45d8'],
+  [['azúcar','azucar'],          'photo-1574484284002-952d92456975'],
+  [['aceite'],                   'photo-1474979266404-7eaacbcd87c5'],
+  [['sal ','sal\n'],             'photo-1584812989895-2d8ff9e44e85'],
+  [['harina'],                   'photo-1509440159596-0249088772ff'],
+  [['tomate'],                   'photo-1546039907-7fa05f864c02'],
+  [['lenteja','poroto','legumbre'], 'photo-1585664811087-47f65abbad64'],
+  [['avena'],                    'photo-1517093157656-b9eccef91cb1'],
+  [['café','cafe'],              'photo-1495474472287-4d71bcdd2085'],
+  [['pollo','pechuga','muslo'],  'photo-1548550023-2bdb3c5beed7'],
+  [['carne','molida','vacuna'],  'photo-1607623814075-e51df1bdc82f'],
+  [['huevo'],                    'photo-1506976785307-8732e854ad03'],
+  [['salchicha','jamón','jamon','fiambre'], 'photo-1553909489-cd47e0907980'],
+  [['pan ','lactal','pan\n'],    'photo-1509440159596-0249088772ff'],
+  [['galletita','bizcocho','cookie'], 'photo-1558961363-fa8fdf82db35'],
+  [['papel higiénico','papel higienico','papel'], 'photo-1584556812952-905ffd0c611a'],
+  [['detergente','lavandina','suavizante','esponja'], 'photo-1563453392212-326f5e854473'],
+  [['desengrasante'],            'photo-1583947581924-860bda6a26df'],
+  [['champú','champu','shampoo'], 'photo-1617922001439-4a2e6562f328'],
+  [['jabón dove','jabon dove'],  'photo-1556228578-8c89e6adf883'],
+  [['pasta dental','dentífrico','cepillo'], 'photo-1559580665-9d9430d91c71'],
+  [['desodorante'],              'photo-1585914924626-915d6f0ecb05'],
+  [['pringles','papas fritas','chips'], 'photo-1621939514649-280e2ee25f60'],
+  [['chocolate','milka','cofler'], 'photo-1606312619070-d48b4c652a52'],
+  [['oreo','galleta rellena'],   'photo-1558961363-fa8fdf82db35'],
+  [['maní','mani','cacahuate'],  'photo-1574570072397-5e7c73c6ad97'],
+  [['caramelo','dulce'],         'photo-1582058091505-f87a2e55a40f'],
+  [['jabón en barra','jabon en barra'], 'photo-1583947581924-860bda6a26df'],
+];
+
+function sugerirImagen() {
+  const n = (form.value.nombre || '').toLowerCase();
+  if (!n) { errorModal.value = 'Escribí primero el nombre del producto.'; return; }
+  errorModal.value = '';
+  for (const [palabras, fotoId] of IMAGEN_MAP) {
+    if (palabras.some(p => n.includes(p))) {
+      form.value.imagen_url = `https://images.unsplash.com/${fotoId}?w=500&q=80`;
+      previstaImagen.value  = null;
+      archivoImagen.value   = null;
+      return;
+    }
+  }
+  // Fallback genérico: supermercado
+  form.value.imagen_url = 'https://images.unsplash.com/photo-1542838132-92c53300491e?w=500&q=80';
+  previstaImagen.value  = null;
+  archivoImagen.value   = null;
 }
 
 async function guardarProducto() {
