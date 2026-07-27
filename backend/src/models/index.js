@@ -14,12 +14,18 @@ const DEFINE_OPTS = {
 
 const dbUrl = process.env.DATABASE_URL || process.env.MYSQL_URL;
 
+// Detecta el dialecto según el prefijo de la URL (postgres:// o mysql://)
+const dialectFromUrl = dbUrl
+  ? (dbUrl.startsWith('postgres') ? 'postgres' : 'mysql')
+  : null;
+
 const sequelize = dbUrl
   ? new Sequelize(dbUrl, {
-      dialect: 'mysql',
-      logging:  false,
-      define:   DEFINE_OPTS,
-      pool:     { max: 5, min: 0, acquire: 30000, idle: 10000 }
+      dialect:        dialectFromUrl,
+      logging:        false,
+      define:         DEFINE_OPTS,
+      pool:           { max: 5, min: 0, acquire: 30000, idle: 10000 },
+      dialectOptions: { ssl: { rejectUnauthorized: false } }
     })
   : new Sequelize(
       process.env.DB_NAME     || process.env.MYSQLDATABASE || dbConfig.database,

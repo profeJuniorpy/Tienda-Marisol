@@ -31,8 +31,8 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host:     process.env.DB_HOST,
-    port:     parseInt(process.env.DB_PORT) || 3306,
-    dialect:  'mysql',
+    port:     parseInt(process.env.DB_PORT) || 5432,
+    dialect:  'postgres',
     logging:  false,
     dialectOptions: { ssl: { rejectUnauthorized: false } },
     define: {
