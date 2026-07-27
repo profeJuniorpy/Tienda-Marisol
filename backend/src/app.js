@@ -16,15 +16,8 @@ const app = express();
 app.use(helmet());
 
 // ─── CORS ────────────────────────────────────────────────────────────────────
-const origenesPermitidos = (process.env.FRONTEND_URL || 'http://localhost:5173,http://localhost:5174')
-  .split(',').map(u => u.trim().replace(/\/$/, '')); // quitar barra final
-
 app.use(cors({
-  origin: (origin, cb) => {
-    const orig = (origin || '').replace(/\/$/, '');
-    if (!orig || origenesPermitidos.includes(orig)) return cb(null, true);
-    cb(new Error('Origen no permitido por CORS'));
-  },
+  origin: (origin, cb) => cb(null, origin || true),
   credentials: true
 }));
 
