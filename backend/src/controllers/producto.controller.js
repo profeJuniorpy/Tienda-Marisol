@@ -80,12 +80,29 @@ async function actualizar(req, res) {
     if (req.file) {
       await eliminarImagen(imagen_url);
       imagen_url = await subirImagen(req.file.buffer, req.file.originalname);
-    } else if (req.body.imagen_url !== undefined) {
+    } else if (req.body.imagen_url !== undefined && req.body.imagen_url !== '') {
       imagen_url = req.body.imagen_url;
     }
 
-    const { imagen_url: _omit, ...resto } = req.body;
-    await producto.update({ ...resto, imagen_url });
+    // Solo campos editables — evita que campos de solo lectura (id, stock_actual,
+    // created_at, updated_at) rompan la validación en PostgreSQL
+    const b = req.body;
+    const campos = {
+      nombre:         b.nombre        || producto.nombre,
+      descripcion:    b.descripcion   ?? producto.descripcion,
+      categoria_id:   b.categoria_id  ? Number(b.categoria_id)  : producto.categoria_id,
+      precio_costo:   b.precio_costo  != null ? Number(b.precio_costo)  : producto.precio_costo,
+      precio_venta:   b.precio_venta  != null ? Number(b.precio_venta)  : producto.precio_venta,
+      stock_minimo:   b.stock_minimo  != null ? Number(b.stock_minimo)  : producto.stock_minimo,
+      unidad_medida:  b.unidad_medida || producto.unidad_medida,
+      tasa_iva:       b.tasa_iva      || producto.tasa_iva,
+      es_perecedero:  b.es_perecedero != null ? (b.es_perecedero === true || b.es_perecedero === 'true') : producto.es_perecedero,
+      visible_online: b.visible_online != null ? (b.visible_online === true || b.visible_online === 'true') : producto.visible_online,
+      codigo_barras:  b.codigo_barras || null,
+      imagen_url,
+    };
+
+    await producto.update(campos);
     res.json(producto);
   } catch (err) {
     res.status(400).json({ error: err.message });
