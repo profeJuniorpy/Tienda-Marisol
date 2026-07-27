@@ -22,6 +22,7 @@ const router = createRouter({
         { path: 'productos',  name: 'Productos',   component: () => import('@/views/admin/Productos.vue') },
         { path: 'stock',      name: 'Stock',       component: () => import('@/views/admin/Stock.vue') },
         { path: 'ventas',     name: 'Ventas',      component: () => import('@/views/admin/Ventas.vue') },
+        { path: 'facturas',   name: 'Facturas',    component: () => import('@/views/admin/Facturas.vue') },
         { path: 'pedidos',    name: 'Pedidos',     component: () => import('@/views/admin/Pedidos.vue') },
         { path: 'proveedores', name: 'Proveedores', component: () => import('@/views/admin/Proveedores.vue') },
         { path: 'compras',    name: 'Compras',     component: () => import('@/views/admin/Compras.vue') },

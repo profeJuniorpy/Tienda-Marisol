@@ -136,7 +136,7 @@ import {
   HomeIcon, CubeIcon, ChartBarIcon, ShoppingCartIcon,
   ClipboardDocumentListIcon, TruckIcon, DocumentChartBarIcon,
   ComputerDesktopIcon, Bars3Icon, BellIcon, ArrowRightOnRectangleIcon,
-  ExclamationTriangleIcon, ShoppingBagIcon, UsersIcon
+  ExclamationTriangleIcon, ShoppingBagIcon, UsersIcon, DocumentTextIcon
 } from '@heroicons/vue/24/outline';
 
 const router        = useRouter();
@@ -157,6 +157,7 @@ const navItems = computed(() => {
     { nombre: 'Stock',        ruta: '/stock',      icono: ChartBarIcon },
     { nombre: 'POS — Ventas', ruta: '/pos',        icono: ComputerDesktopIcon },
     { nombre: 'Ventas',       ruta: '/ventas',     icono: ShoppingCartIcon },
+    { nombre: 'Facturas',     ruta: '/facturas',   icono: DocumentTextIcon },
     { nombre: 'Pedidos',      ruta: '/pedidos',    icono: ClipboardDocumentListIcon },
     { nombre: 'Proveedores',  ruta: '/proveedores', icono: TruckIcon },
     { nombre: 'Compras',      ruta: '/compras',    icono: ShoppingBagIcon },
