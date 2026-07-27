@@ -11,6 +11,9 @@ cloudinary.config({
  * @returns {string} URL pública de la imagen
  */
 async function subirImagen(buffer, nombreArchivo) {
+  if (!process.env.CLOUDINARY_API_KEY) {
+    throw new Error('Cloudinary no está configurado. Usá el campo "URL de imagen" para ingresar un enlace externo.');
+  }
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {

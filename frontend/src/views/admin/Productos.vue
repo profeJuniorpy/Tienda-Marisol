@@ -188,17 +188,27 @@
               </div>
               <div class="sm:col-span-2">
                 <label class="label">Imagen del producto</label>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 mb-2">
                   <img v-if="previstaImagen || form.imagen_url"
                     :src="previstaImagen || form.imagen_url"
-                    class="h-20 w-20 rounded-lg object-cover border" />
-                  <div v-else class="h-20 w-20 rounded-lg bg-gray-100 flex items-center justify-center border">
+                    class="h-20 w-20 rounded-lg object-cover border flex-shrink-0"
+                    @error="form.imagen_url = null" />
+                  <div v-else class="h-20 w-20 rounded-lg bg-gray-100 flex items-center justify-center border flex-shrink-0">
                     <PhotoIcon class="h-8 w-8 text-gray-300" />
                   </div>
-                  <label class="btn-secondary text-sm cursor-pointer">
-                    Seleccionar imagen
-                    <input type="file" accept="image/*" class="hidden" @change="previsualizar" />
-                  </label>
+                  <div class="flex-1 space-y-2">
+                    <input
+                      v-model="form.imagen_url"
+                      class="input text-sm"
+                      placeholder="https://... (pegar URL de imagen)"
+                      @input="previstaImagen = null; archivoImagen = null"
+                    />
+                    <label class="btn-secondary text-xs cursor-pointer inline-flex items-center gap-1">
+                      <PhotoIcon class="h-3.5 w-3.5" /> O subir archivo
+                      <input type="file" accept="image/*" class="hidden" @change="previsualizar" />
+                    </label>
+                    <p v-if="archivoImagen" class="text-xs text-gray-400">Archivo: {{ archivoImagen.name }}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -334,7 +344,11 @@ async function guardarProducto() {
       if (v !== null && v !== undefined && k !== 'imagen_url' && k !== 'categoria' && k !== 'lotes')
         fd.append(k, v);
     });
-    if (archivoImagen.value) fd.append('imagen', archivoImagen.value);
+    if (archivoImagen.value) {
+      fd.append('imagen', archivoImagen.value);
+    } else if (form.value.imagen_url) {
+      fd.append('imagen_url', form.value.imagen_url);
+    }
 
     if (editando.value) {
       await api.put(`/productos/${form.value.id}`, fd, { headers: { 'Content-Type': 'multipart/form-data' } });
