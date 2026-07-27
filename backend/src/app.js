@@ -17,11 +17,12 @@ app.use(helmet());
 
 // ─── CORS ────────────────────────────────────────────────────────────────────
 const origenesPermitidos = (process.env.FRONTEND_URL || 'http://localhost:5173,http://localhost:5174')
-  .split(',').map(u => u.trim());
+  .split(',').map(u => u.trim().replace(/\/$/, '')); // quitar barra final
 
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || origenesPermitidos.includes(origin)) return cb(null, true);
+    const orig = (origin || '').replace(/\/$/, '');
+    if (!orig || origenesPermitidos.includes(orig)) return cb(null, true);
     cb(new Error('Origen no permitido por CORS'));
   },
   credentials: true
