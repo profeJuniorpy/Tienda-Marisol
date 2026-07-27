@@ -79,7 +79,7 @@ async function crear(req, res, next) {
       // 3. Crear registro de factura (pendiente → se actualiza después de SIFEN)
       facturaCreada = await Factura.create({
         venta_id:            ventaCreada.id,
-        tipo:                'contado',
+        tipo:                'factura',
         numero_comprobante:  null,
         estado_sifen:        'pendiente',
         ruc_cliente:         datos_factura.ruc_cliente  || null,
