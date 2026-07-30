@@ -79,14 +79,12 @@ async function crear(req, res, next) {
 
       // 6. Crear detalles
       for (const item of items) {
-        const prod = await Producto.findByPk(item.producto_id, { transaction: t });
         await DetallePedido.create({
           pedido_id:       pedidoCreado.id,
           producto_id:     item.producto_id,
           cantidad:        item.cantidad,
           precio_unitario: item.precio_unitario,
-          subtotal:        Math.round(item.precio_unitario * item.cantidad),
-          nombre_snapshot: prod.nombre
+          subtotal:        Math.round(item.precio_unitario * item.cantidad)
         }, { transaction: t });
       }
 
@@ -135,7 +133,7 @@ async function misPedidos(req, res, next) {
     const pedidos = await Pedido.findAll({
       where: { cliente_id: req.cliente.id },
       include: [
-        { model: DetallePedido, as: 'detalles', attributes: ['producto_id', 'nombre_snapshot', 'cantidad', 'precio_unitario', 'subtotal'] },
+        { model: DetallePedido, as: 'detalles', attributes: ['producto_id', 'cantidad', 'precio_unitario', 'subtotal'] },
         { model: PickupSlot,    as: 'slot',     attributes: ['fecha', 'hora_inicio', 'hora_fin'] }
       ],
       order: [['fecha_pedido', 'DESC']]
@@ -170,7 +168,7 @@ async function listar(req, res, next) {
       include: [
         { model: Cliente,    as: 'cliente',  attributes: ['nombre', 'email', 'telefono'], required: false },
         { model: PickupSlot, as: 'slot',     attributes: ['fecha', 'hora_inicio', 'hora_fin'] },
-        { model: DetallePedido, as: 'detalles', attributes: ['nombre_snapshot', 'cantidad', 'precio_unitario'] }
+        { model: DetallePedido, as: 'detalles', attributes: ['producto_id', 'cantidad', 'precio_unitario', 'subtotal'], include: [{ model: Producto, as: 'producto', attributes: ['nombre'] }] }
       ],
       order:  [['fecha_pedido', 'DESC']],
       limit:  parseInt(limit),
