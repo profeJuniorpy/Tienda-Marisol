@@ -34,6 +34,16 @@ module.exports = (sequelize) => {
       allowNull: false,
       defaultValue: 0.00
     },
+    iva_10: {
+      type: DataTypes.DECIMAL(14, 2),
+      allowNull: false,
+      defaultValue: 0.00
+    },
+    iva_5: {
+      type: DataTypes.DECIMAL(14, 2),
+      allowNull: false,
+      defaultValue: 0.00
+    },
     metodo_pago: {
       type: DataTypes.ENUM('efectivo', 'tarjeta', 'transferencia', 'billetera'),
       defaultValue: 'efectivo'

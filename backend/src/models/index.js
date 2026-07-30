@@ -110,6 +110,10 @@ DetalleVenta.belongsTo(Producto, { foreignKey: 'producto_id', as: 'producto' });
 Venta.hasOne(Factura, { foreignKey: 'venta_id', as: 'factura' });
 Factura.belongsTo(Venta, { foreignKey: 'venta_id', as: 'venta' });
 
+// Producto ↔ Alerta
+Producto.hasMany(Alerta, { foreignKey: 'producto_id', as: 'alertas' });
+Alerta.belongsTo(Producto, { foreignKey: 'producto_id', as: 'producto' });
+
 // Cliente ↔ Pedido
 Cliente.hasMany(Pedido, { foreignKey: 'cliente_id', as: 'pedidos' });
 Pedido.belongsTo(Cliente, { foreignKey: 'cliente_id', as: 'cliente' });
