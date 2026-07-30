@@ -143,11 +143,11 @@ async function cargarMes() {
   try {
     const { data } = await api.get('/reportes/ventas-mes', { params: { anio: anio.value, mes: mes.value } });
     datosMes.value = data;
-    await nextTick();
-    renderGrafico();
   } finally {
     cargando.value = false;
   }
+  await nextTick();
+  renderGrafico();
 }
 
 function renderGrafico() {
@@ -155,7 +155,7 @@ function renderGrafico() {
   if (chartBarras) { chartBarras.destroy(); chartBarras = null; }
 
   const datos  = datosMes.value.ventasPorDia || [];
-  const labels = datos.map(d => d.fecha?.slice(8, 10)); // día del mes
+  const labels = datos.map(d => String(d.fecha || '').slice(8, 10) || d.fecha);
   const montos = datos.map(d => parseFloat(d.monto) || 0);
 
   chartBarras = new Chart(canvasBarras.value, {
