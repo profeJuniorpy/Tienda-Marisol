@@ -1,7 +1,7 @@
 'use strict';
 
 const { Op, fn, col, literal } = require('sequelize');
-const { Venta, DetalleVenta, Producto, Categoria, Factura } = require('../models');
+const { Venta, DetalleVenta, Producto, Categoria, Factura, Pedido } = require('../models');
 
 // ─── Rango de fechas ──────────────────────────────────────────────────────────
 
@@ -174,16 +174,21 @@ async function resumenDashboard(req, res, next) {
     const ahora                        = new Date();
     const { inicio: mes }              = rangoMes(ahora.getFullYear(), ahora.getMonth() + 1);
 
-    const [ventasHoy, ventasSemana, ventasMes] = await Promise.all([
+    const [ventasHoy, ventasSemana, ventasMes, totalProductos, pedidosActivos, stockBajo] = await Promise.all([
       Venta.findAll({ where: { estado: 'completada', created_at: { [Op.between]: [hoy, finDia] } }, attributes: ['total'], raw: true }),
       Venta.findAll({ where: { estado: 'completada', created_at: { [Op.gte]: semana } }, attributes: ['total'], raw: true }),
-      Venta.findAll({ where: { estado: 'completada', created_at: { [Op.gte]: mes } }, attributes: ['total'], raw: true })
+      Venta.findAll({ where: { estado: 'completada', created_at: { [Op.gte]: mes } }, attributes: ['total'], raw: true }),
+      Producto.count({ where: { activo: true } }),
+      Pedido.count({ where: { estado: { [Op.in]: ['pendiente', 'confirmado', 'listo'] } } }),
+      Producto.count({ where: { activo: true, stock_actual: { [Op.lte]: literal('"stock_minimo"') } } })
     ]);
 
     res.json({
-      hoy:    { cantidad: ventasHoy.length,    monto: ventasHoy.reduce((s, v)    => s + parseFloat(v.total), 0) },
-      semana: { cantidad: ventasSemana.length, monto: ventasSemana.reduce((s, v) => s + parseFloat(v.total), 0) },
-      mes:    { cantidad: ventasMes.length,    monto: ventasMes.reduce((s, v)    => s + parseFloat(v.total), 0) }
+      hoy:       { cantidad: ventasHoy.length,    monto: ventasHoy.reduce((s, v)    => s + parseFloat(v.total), 0) },
+      semana:    { cantidad: ventasSemana.length, monto: ventasSemana.reduce((s, v) => s + parseFloat(v.total), 0) },
+      mes:       { cantidad: ventasMes.length,    monto: ventasMes.reduce((s, v)    => s + parseFloat(v.total), 0) },
+      productos: { total: totalProductos, stock_bajo: stockBajo },
+      pedidos:   { activos: pedidosActivos }
     });
   } catch (err) {
     next(err);
