@@ -138,7 +138,7 @@ async function misPedidos(req, res, next) {
         { model: DetallePedido, as: 'detalles', attributes: ['producto_id', 'nombre_snapshot', 'cantidad', 'precio_unitario', 'subtotal'] },
         { model: PickupSlot,    as: 'slot',     attributes: ['fecha', 'hora_inicio', 'hora_fin'] }
       ],
-      order: [['created_at', 'DESC']]
+      order: [['fecha_pedido', 'DESC']]
     });
     res.json({ pedidos });
   } catch (err) {
@@ -159,7 +159,7 @@ async function listar(req, res, next) {
       { codigo_retiro: { [Op.like]: `%${busqueda}%` } }
     ];
     if (fecha) {
-      where.created_at = {
+      where.fecha_pedido = {
         [Op.gte]: new Date(fecha + 'T00:00:00'),
         [Op.lte]: new Date(fecha + 'T23:59:59')
       };
@@ -172,7 +172,7 @@ async function listar(req, res, next) {
         { model: PickupSlot, as: 'slot',     attributes: ['fecha', 'hora_inicio', 'hora_fin'] },
         { model: DetallePedido, as: 'detalles', attributes: ['nombre_snapshot', 'cantidad', 'precio_unitario'] }
       ],
-      order:  [['created_at', 'DESC']],
+      order:  [['fecha_pedido', 'DESC']],
       limit:  parseInt(limit),
       offset,
       distinct: true

@@ -16,10 +16,20 @@ module.exports = (sequelize) => {
       allowNull: true
     },
     estado: {
-      type: DataTypes.ENUM('pendiente', 'confirmado', 'listo', 'entregado', 'cancelado'),
+      type: DataTypes.ENUM('pendiente', 'confirmado', 'listo', 'retirado', 'cancelado'),
       defaultValue: 'pendiente'
     },
     total: {
+      type: DataTypes.DECIMAL(14, 2),
+      allowNull: false,
+      defaultValue: 0.00
+    },
+    subtotal: {
+      type: DataTypes.DECIMAL(14, 2),
+      allowNull: false,
+      defaultValue: 0.00
+    },
+    descuento: {
       type: DataTypes.DECIMAL(14, 2),
       allowNull: false,
       defaultValue: 0.00
@@ -30,6 +40,14 @@ module.exports = (sequelize) => {
     },
     codigo_retiro: {
       type: DataTypes.STRING(10),
+      allowNull: true
+    },
+    nombre_contacto: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
+    telefono: {
+      type: DataTypes.STRING(20),
       allowNull: true
     },
     confirmado_por: {
